@@ -14,5 +14,17 @@ namespace api_mobile.Repository
 
             return produtos;
         }
+
+        public async Task<bool> AlredyExist(string codBarra)
+        {
+            return await _context.Set<Produto>().Where(x => x.CodigoBarras == codBarra).AnyAsync();
+        }
+
+        public async Task<Produto> GetByCodBarras(string codigoBarra)
+        {
+            Produto produto = await _context.Set<Produto>().Where(x => x.CodigoBarras == codigoBarra).FirstOrDefaultAsync();
+            
+            return produto; 
+        }
     }
 }

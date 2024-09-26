@@ -29,5 +29,11 @@ namespace api_mobile.Controllers
         {
             return ServiceResponse(await _produtoService.GetAll(estoqueId));
         }
+
+        [HttpGet("CodBarras/{codigoBarra}")]
+        public async Task<IActionResult> GetByCodigoBarra(string codigoBarra)
+        {
+            return ServiceResponse(await _produtoService.GetByCodBarras(codigoBarra));
+        }
     }
 }

@@ -26,6 +26,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 
+
 #region ADICIONANDO SERVICES
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<UsuarioRepository>();
@@ -36,6 +37,7 @@ builder.Services.AddScoped<EstoqueService>();
 builder.Services.AddScoped<ProdutoCategoriaRepository>();
 builder.Services.AddScoped<CategoriaRepository>();
 builder.Services.AddScoped<CategoriaService>();
+builder.Services.AddScoped<ValidadeRepository>();
 #endregion
 builder.Services.AddServiceJwt();
 

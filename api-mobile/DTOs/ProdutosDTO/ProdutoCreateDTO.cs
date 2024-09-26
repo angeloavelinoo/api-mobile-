@@ -9,5 +9,6 @@
         public decimal Valor { get; set; }
         public int EstoqueId { get; set; }
         public int CategpriaId { get; set; }
+        public DateOnly DataValidade { get; set; }
     }
 }

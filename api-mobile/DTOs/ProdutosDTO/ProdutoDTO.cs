@@ -12,5 +12,6 @@ namespace api_mobile.DTOs.ProdutosDTO
         public decimal Valor { get; set; }
         public int EstoqueId { get; set; }
         public string CategoriaNome { get; set; }
+        public DateOnly DataValidade { get; set; }
     }
 }
