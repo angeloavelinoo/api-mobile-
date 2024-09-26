@@ -49,7 +49,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: corsName,
         builder =>
         {
-            builder.WithOrigins("http://localhost:4200")
+            builder.WithOrigins("http://localhost:8100")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
