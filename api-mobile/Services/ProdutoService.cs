@@ -3,6 +3,7 @@ using api_mobile.Model;
 using api_mobile.Repository;
 using api_mobile.ViewModel;
 using System.Net;
+using api_mobile.DTOs;
 
 namespace api_mobile.Services
 {
@@ -25,7 +26,7 @@ namespace api_mobile.Services
 
             await _produtoCategoriaRepository.Create(produtoCategoria);
 
-            Validade validade = new(produtoId: produto.Id, dataValidade: produtoDTO.DataValidade);
+            Validade validade = new(produtoId: produto.Id, dataValidade: produtoDTO.DataValidade, quantidade: produtoDTO.Quantidade);
             
             await _validadeRepository.Create(validade);
 
@@ -34,10 +35,35 @@ namespace api_mobile.Services
 
         }
 
-        //public async Task<ResultModel<dynamic>> Update(int id, ProdutoUpdateDTO produtoDTO)
-        //{
+        public async Task<ResultModel<dynamic>> Update(int id, ProdutoUpdateDTO produtoDTO)
+        {
+            Produto produto = await _produtoRepository.GetById(id);
+            if(produto == null)
+                return new ResultModel<dynamic>(HttpStatusCode.NotFound, "Produto não encontrado.");
 
-        //}
+            ProdutoCategoria categoria = await _produtoCategoriaRepository.GetByProdutoId(produto.Id);
+            
+            produto.Nome = produtoDTO.Nome;
+            produto.Quantidade += produtoDTO.Quantidade;
+            produto.Valor = produtoDTO.Valor;
+            produto.QuantidadeMinima = produtoDTO.QuantidadeMinima;
+            produto.CodigoBarras = produtoDTO.CodigoBarras;
+            produto.EstoqueId = produtoDTO.EstoqueId;
+            if (produtoDTO.DataValidade != default(DateOnly))
+            {
+                Validade validade = new(produtoId: produto.Id, dataValidade: produtoDTO.DataValidade, quantidade: produtoDTO.Quantidade);
+                await _validadeRepository.Create(validade);
+            }
+
+            if (categoria.CategoriaId != produtoDTO.CategoriaId)
+            {
+                categoria.CategoriaId = produtoDTO.CategoriaId;
+            }
+
+            await _produtoRepository.Update(produto);
+
+            return new();
+        }
 
         public async Task<ResultModel<ProdutoDTO>> GetById(int id)
         {
@@ -47,22 +73,34 @@ namespace api_mobile.Services
 
             ProdutoCategoria produtoCategoria = await _produtoCategoriaRepository.GetByProdutoId(produto.Id);
 
-            Validade validade =  await _validadeRepository.Get(produto.Id);
-            
+            List<Validade> validades =  await _validadeRepository.GetAll(produto.Id);
 
             ProdutoDTO produtoDTO = new()
             {
                 Id = produto.Id,
                 CodigoBarras = produto.CodigoBarras,
                 Nome = produto.Nome,
-                Quantidade = produto.Quantidade,
+                QuantidadeTotal = produto.Quantidade,
                 QuantidadeMinima = produto.QuantidadeMinima,
                 Valor = produto.Valor,
                 EstoqueId = produto.EstoqueId,
-                CategoriaNome = produtoCategoria.Categoria.Nome,
-                DataValidade = validade.DataValidade,
+                CategoriaNome = produtoCategoria.Categoria.Nome
             };
-
+            
+            List<ValidadeDTO> validadesdto = new List<ValidadeDTO>();
+            foreach (Validade validade in validades)
+            {
+                ValidadeDTO validadeDTO = new ValidadeDTO()
+                {
+                    DataValidade = validade.DataValidade,
+                    Quantidade = validade.Quantidade,
+                };
+                
+                validadesdto.Add(validadeDTO);
+            }
+            
+            produtoDTO.Validades = validadesdto;
+            
             return new(produtoDTO);
         }
 
@@ -74,23 +112,38 @@ namespace api_mobile.Services
                 return new(HttpStatusCode.NotFound, "Nenhum produto deste estoque foi encontrado");
 
             List <ProdutoDTO> produtosDTO = new();
+            List<ValidadeDTO> validadesDTO = new();
 
             foreach(Produto produto in produtos)
             {
                 ProdutoCategoria produtoCategoria = await _produtoCategoriaRepository.GetByProdutoId(produto.Id);
+                List<Validade> validades =  await _validadeRepository.GetAll(produto.Id);
 
                 ProdutoDTO produtoDTO = new ProdutoDTO {
                     Id = produto.Id,
                     CodigoBarras = produto.CodigoBarras,
                     Nome = produto.Nome,
-                    Quantidade = produto.Quantidade,
+                    QuantidadeTotal = produto.Quantidade,
                     QuantidadeMinima = produto.QuantidadeMinima,
                     Valor = produto.Valor,
                     EstoqueId = produto.EstoqueId,
                     CategoriaNome = produtoCategoria.Categoria.Nome
                 };
-
+                
                 produtosDTO.Add(produtoDTO);
+                
+                foreach (Validade validade in validades)
+                {
+                    ValidadeDTO validadeDto = new()
+                    {
+                        DataValidade = validade.DataValidade,
+                        Quantidade = validade.Quantidade,
+                        
+
+                    };
+                    validadesDTO.Add(validadeDto);
+                    produtoDTO.Validades = validadesDTO;
+                }
             }
 
             return new(produtosDTO);
@@ -110,7 +163,7 @@ namespace api_mobile.Services
                 Id = produto.Id,
                 CodigoBarras = produto.CodigoBarras,
                 Nome = produto.Nome,
-                Quantidade = produto.Quantidade,
+                QuantidadeTotal = produto.Quantidade,
                 QuantidadeMinima = produto.QuantidadeMinima,
                 Valor = produto.Valor,
                 EstoqueId = produto.EstoqueId,

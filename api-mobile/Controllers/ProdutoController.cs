@@ -35,5 +35,11 @@ namespace api_mobile.Controllers
         {
             return ServiceResponse(await _produtoService.GetByCodBarras(codigoBarra));
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, ProdutoUpdateDTO produtoDTO)
+        {
+            return ServiceResponse(await _produtoService.Update(id, produtoDTO));
+        }
     }
 }

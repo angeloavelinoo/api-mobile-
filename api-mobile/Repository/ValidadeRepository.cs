@@ -19,5 +19,10 @@ public class ValidadeRepository(DataContext context)
     {
         return await _context.Set<Validade>().Where(x => x.ProdutoId == produtoId).FirstOrDefaultAsync();
     }
+
+    public async Task<List<Validade>> GetAll(int produtoId)
+    {
+        return await _context.Set<Validade>().Where(x => x.ProdutoId == produtoId).ToListAsync();
+    }
     
 }

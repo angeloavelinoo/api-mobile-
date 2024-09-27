@@ -55,7 +55,7 @@ namespace api_mobile.Services
                     Id = produto.Id,
                     CodigoBarras = produto.CodigoBarras,
                     Nome = produto.Nome,
-                    Quantidade = produto.Quantidade,
+                    QuantidadeTotal = produto.Quantidade,
                     QuantidadeMinima = produto.QuantidadeMinima,
                     Valor = produto.Valor,
                     EstoqueId = produto.EstoqueId
