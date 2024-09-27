@@ -41,5 +41,17 @@ namespace api_mobile.Controllers
         {
             return ServiceResponse(await _produtoService.Update(id, produtoDTO));
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return ServiceResponse(await _produtoService.Delete(id));
+        }
+
+        [HttpGet("ListaCompra")]
+        public async Task<IActionResult> ListaCompra()
+        {
+            return ServiceResponse(await _produtoService.ListaCompra());
+        }
     }
 }

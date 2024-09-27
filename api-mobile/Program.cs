@@ -38,6 +38,8 @@ builder.Services.AddScoped<ProdutoCategoriaRepository>();
 builder.Services.AddScoped<CategoriaRepository>();
 builder.Services.AddScoped<CategoriaService>();
 builder.Services.AddScoped<ValidadeRepository>();
+builder.Services.AddScoped<MovimentacaoRepository>();
+
 #endregion
 builder.Services.AddServiceJwt();
 

@@ -7,11 +7,12 @@ using api_mobile.DTOs;
 
 namespace api_mobile.Services
 {
-    public class ProdutoService(ProdutoRepository produtoRepository, ProdutoCategoriaRepository produtoCategoriaRepository, ValidadeRepository validadeRepository)
+    public class ProdutoService(ProdutoRepository produtoRepository, ProdutoCategoriaRepository produtoCategoriaRepository, ValidadeRepository validadeRepository, MovimentacaoRepository movimentacaoRepository)
     {
         private readonly ProdutoRepository _produtoRepository = produtoRepository;
         private readonly ProdutoCategoriaRepository _produtoCategoriaRepository = produtoCategoriaRepository;
         private readonly ValidadeRepository _validadeRepository = validadeRepository;
+        private readonly MovimentacaoRepository _movimentacaoRepository = movimentacaoRepository;
 
         public async Task<ResultModel<dynamic>> Add(ProdutoCreateDTO produtoDTO)
         {
@@ -30,6 +31,11 @@ namespace api_mobile.Services
             
             await _validadeRepository.Create(validade);
 
+            Movimentacao movimentacao = new(tipo: "Entrada", produtoId: produto.Id, quantidade: produto.Quantidade, valorTotal: produto.Valor * produto.Quantidade, dataMovimentacao: DateTime.UtcNow);
+
+            await _movimentacaoRepository.Create(movimentacao);
+
+
             return new();
 
 
@@ -44,15 +50,32 @@ namespace api_mobile.Services
             ProdutoCategoria categoria = await _produtoCategoriaRepository.GetByProdutoId(produto.Id);
             
             produto.Nome = produtoDTO.Nome;
-            produto.Quantidade += produtoDTO.Quantidade;
             produto.Valor = produtoDTO.Valor;
             produto.QuantidadeMinima = produtoDTO.QuantidadeMinima;
             produto.CodigoBarras = produtoDTO.CodigoBarras;
             produto.EstoqueId = produtoDTO.EstoqueId;
             if (produtoDTO.DataValidade != default(DateOnly))
             {
-                Validade validade = new(produtoId: produto.Id, dataValidade: produtoDTO.DataValidade, quantidade: produtoDTO.Quantidade);
-                await _validadeRepository.Create(validade);
+                if(produtoDTO.Quantidade < 0)
+                {
+                    produto.Quantidade -= produtoDTO.Quantidade;
+
+                    Movimentacao movimentacao = new(tipo: "Saida", produtoId: produto.Id, quantidade: produtoDTO.Quantidade, valorTotal: produtoDTO.Valor * produtoDTO.Quantidade, dataMovimentacao: DateTime.UtcNow);
+
+                    await _movimentacaoRepository.Create(movimentacao);
+
+                    Validade validade = await _validadeRepository.GetByValidadeAndId(produto.Id, produtoDTO.DataValidade);
+
+                    validade.Quantidade -= produtoDTO.Quantidade;
+
+                    await _validadeRepository.Update(validade);
+                }
+                else
+                {
+                    produto.Quantidade += produtoDTO.Quantidade;
+                    Validade validade = new(produtoId: produto.Id, dataValidade: produtoDTO.DataValidade, quantidade: produtoDTO.Quantidade);
+                    await _validadeRepository.Create(validade);
+                }
             }
 
             if (categoria.CategoriaId != produtoDTO.CategoriaId)
@@ -60,7 +83,17 @@ namespace api_mobile.Services
                 categoria.CategoriaId = produtoDTO.CategoriaId;
             }
 
+
+
             await _produtoRepository.Update(produto);
+
+
+            if(produtoDTO.Quantidade > 0)
+            {
+                Movimentacao movimentacao = new(tipo: "Entrada", produtoId: produto.Id, quantidade: produtoDTO.Quantidade, valorTotal: produtoDTO.Valor * produtoDTO.Quantidade, dataMovimentacao: DateTime.UtcNow);
+                await _movimentacaoRepository.Create(movimentacao);
+            }
+
 
             return new();
         }
@@ -98,8 +131,8 @@ namespace api_mobile.Services
                 
                 validadesdto.Add(validadeDTO);
             }
-            
-            produtoDTO.Validades = validadesdto;
+
+            produtoDTO.Validades = validadesdto.OrderByDescending(x => x.DataValidade).ToList();
             
             return new(produtoDTO);
         }
@@ -142,7 +175,7 @@ namespace api_mobile.Services
 
                     };
                     validadesDTO.Add(validadeDto);
-                    produtoDTO.Validades = validadesDTO;
+                    produtoDTO.Validades = validadesDTO.OrderByDescending(x => x.DataValidade).ToList();
                 }
             }
 
@@ -158,6 +191,8 @@ namespace api_mobile.Services
             
             ProdutoCategoria produtoCategoria = await _produtoCategoriaRepository.GetByProdutoId(produto.Id);
 
+            List<Validade> validades = await _validadeRepository.GetAll(produto.Id);
+
             ProdutoDTO produtoDTO = new()
             {
                 Id = produto.Id,
@@ -169,7 +204,21 @@ namespace api_mobile.Services
                 EstoqueId = produto.EstoqueId,
                 CategoriaNome = produtoCategoria.Categoria.Nome
             };
-            
+
+            List<ValidadeDTO> validadesdto = new List<ValidadeDTO>();
+            foreach (Validade validade in validades)
+            {
+                ValidadeDTO validadeDTO = new ValidadeDTO()
+                {
+                    DataValidade = validade.DataValidade,
+                    Quantidade = validade.Quantidade,
+                };
+
+                validadesdto.Add(validadeDTO);
+            }
+
+            produtoDTO.Validades = validadesdto.OrderByDescending(x => x.DataValidade).ToList();
+
             return new(produtoDTO);
         }
 
@@ -181,7 +230,44 @@ namespace api_mobile.Services
 
             await _produtoRepository.Remove(produto);
 
+            Movimentacao movimentacao = new(tipo: "Exclusão", produtoId: produto.Id, quantidade: produto.Quantidade, valorTotal: produto.Valor * produto.Quantidade, dataMovimentacao: DateTime.UtcNow);
+
+            await _movimentacaoRepository.Create(movimentacao);
+
             return new();
         }
+
+        public async Task<ResultModel<dynamic>> Compra(List<CompraDTO> compraDTO)
+        {
+            foreach(var item in compraDTO)
+            {
+                Produto produto = await _produtoRepository.GetById(item.ProdutoId);
+                Validade validade = await _validadeRepository.GetByValidadeAndId(item.ProdutoId, item.Validade);
+
+                validade.Quantidade -= item.Quantidade;
+                produto.Quantidade += item.Quantidade;
+
+                await _produtoRepository.Update(produto);
+                await _validadeRepository.Update(validade);
+
+                Movimentacao movimentacao = new(tipo: "Saida", produtoId: produto.Id, quantidade: produto.Quantidade, valorTotal: produto.Valor * produto.Quantidade, dataMovimentacao: DateTime.UtcNow);
+
+                await _movimentacaoRepository.Create(movimentacao);
+
+            }
+
+            return new();
+        }
+
+        public async Task<ResultModel<List<Produto>>> ListaCompra()
+        {
+            List<Produto> produtos = await _produtoRepository.ListaCompra();
+
+            if (produtos.Count == 0)
+                return new(HttpStatusCode.NotFound, "Nenhum produto para lista de compra");
+
+            return new(produtos);
+        }
+
     }
 }

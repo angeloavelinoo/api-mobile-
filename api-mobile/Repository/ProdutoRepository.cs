@@ -26,5 +26,12 @@ namespace api_mobile.Repository
             
             return produto; 
         }
+
+        public async Task<List<Produto>> ListaCompra()
+        {
+            List<Produto> produtos = await _context.Set<Produto>().Where(x => x.Quantidade < x.QuantidadeMinima).ToListAsync();
+
+            return produtos;
+        }
     }
 }
