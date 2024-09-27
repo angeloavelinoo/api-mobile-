@@ -22,7 +22,7 @@ namespace api_mobile.Services
             
             await _produtoRepository.Create(produto);
 
-            ProdutoCategoria produtoCategoria = new(produtoId: produto.Id, categoriaId: produtoDTO.CategpriaId);
+            ProdutoCategoria produtoCategoria = new(produtoId: produto.Id, categoriaId: produtoDTO.CategoriaId);
 
             await _produtoCategoriaRepository.Create(produtoCategoria);
 

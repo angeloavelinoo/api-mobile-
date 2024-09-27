@@ -8,7 +8,7 @@
         public int QuantidadeMinima { get; set; }
         public decimal Valor { get; set; }
         public int EstoqueId { get; set; }
-        public int CategpriaId { get; set; }
+        public int CategoriaId { get; set; }
         public DateOnly DataValidade { get; set; }
     }
 }
