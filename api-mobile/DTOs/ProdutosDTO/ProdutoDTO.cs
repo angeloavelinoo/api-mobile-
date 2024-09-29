@@ -11,6 +11,7 @@ namespace api_mobile.DTOs.ProdutosDTO
         public int QuantidadeMinima { get; set; }
         public decimal Valor { get; set; }
         public int EstoqueId { get; set; }
+        public int CategoriaId { get; set; }
         public string CategoriaNome { get; set; }
         public List<ValidadeDTO> Validades { get; set; }
     }

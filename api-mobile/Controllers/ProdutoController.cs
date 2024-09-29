@@ -1,4 +1,5 @@
-﻿using api_mobile.DTOs.ProdutosDTO;
+﻿using api_mobile.DTOs;
+using api_mobile.DTOs.ProdutosDTO;
 using api_mobile.Model;
 using api_mobile.Services;
 using api_mobile.ViewModel;
@@ -52,6 +53,12 @@ namespace api_mobile.Controllers
         public async Task<IActionResult> ListaCompra()
         {
             return ServiceResponse(await _produtoService.ListaCompra());
+        }
+
+        [HttpPost("Venda")]
+        public async Task<IActionResult> Venda(List<CompraDTO> vendas)
+        {
+            return ServiceResponse(await _produtoService.Compra(vendas));
         }
     }
 }

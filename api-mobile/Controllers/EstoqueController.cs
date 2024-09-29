@@ -39,5 +39,11 @@ namespace api_mobile.Controllers
         {
             return ServiceResponse(await _estoqueService.Update(id ,estoqueDTO));
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return ServiceResponse(await _estoqueService.Delete(id));
+        }
     }
 }

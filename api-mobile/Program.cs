@@ -38,6 +38,7 @@ builder.Services.AddScoped<ProdutoCategoriaRepository>();
 builder.Services.AddScoped<CategoriaRepository>();
 builder.Services.AddScoped<CategoriaService>();
 builder.Services.AddScoped<ValidadeRepository>();
+builder.Services.AddScoped<ValidadeService>();
 builder.Services.AddScoped<MovimentacaoRepository>();
 
 #endregion

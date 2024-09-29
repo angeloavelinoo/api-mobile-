@@ -117,7 +117,8 @@ namespace api_mobile.Services
                 QuantidadeMinima = produto.QuantidadeMinima,
                 Valor = produto.Valor,
                 EstoqueId = produto.EstoqueId,
-                CategoriaNome = produtoCategoria.Categoria.Nome
+                CategoriaNome = produtoCategoria.Categoria.Nome,
+                CategoriaId = produtoCategoria.Categoria.Id
             };
             
             List<ValidadeDTO> validadesdto = new List<ValidadeDTO>();
@@ -125,6 +126,7 @@ namespace api_mobile.Services
             {
                 ValidadeDTO validadeDTO = new ValidadeDTO()
                 {
+                    Id = validade.Id,
                     DataValidade = validade.DataValidade,
                     Quantidade = validade.Quantidade,
                 };
@@ -160,7 +162,8 @@ namespace api_mobile.Services
                     QuantidadeMinima = produto.QuantidadeMinima,
                     Valor = produto.Valor,
                     EstoqueId = produto.EstoqueId,
-                    CategoriaNome = produtoCategoria.Categoria.Nome
+                    CategoriaNome = produtoCategoria.Categoria.Nome,
+                    CategoriaId = produtoCategoria.Categoria.Id
                 };
                 
                 produtosDTO.Add(produtoDTO);
@@ -169,6 +172,7 @@ namespace api_mobile.Services
                 {
                     ValidadeDTO validadeDto = new()
                     {
+                        Id = validade.Id,
                         DataValidade = validade.DataValidade,
                         Quantidade = validade.Quantidade,
                         
@@ -202,7 +206,8 @@ namespace api_mobile.Services
                 QuantidadeMinima = produto.QuantidadeMinima,
                 Valor = produto.Valor,
                 EstoqueId = produto.EstoqueId,
-                CategoriaNome = produtoCategoria.Categoria.Nome
+                CategoriaNome = produtoCategoria.Categoria.Nome,
+                CategoriaId = produtoCategoria.Categoria.Id
             };
 
             List<ValidadeDTO> validadesdto = new List<ValidadeDTO>();
@@ -210,6 +215,7 @@ namespace api_mobile.Services
             {
                 ValidadeDTO validadeDTO = new ValidadeDTO()
                 {
+                    Id = validade.Id,
                     DataValidade = validade.DataValidade,
                     Quantidade = validade.Quantidade,
                 };

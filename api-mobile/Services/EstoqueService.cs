@@ -85,6 +85,26 @@ namespace api_mobile.Services
 
             return new();
         }
+
+        public async Task<ResultModel<dynamic>> Delete(int id)
+        {
+            Estoque estoque = await _estoqueRepository.GetById(id);
+            if (estoque == null)
+                return new(HttpStatusCode.NotFound, "Estoque não encontrado");
+
+            List<Produto> produtos = await _produtoRepository.GetByEstoque(estoque.Id);
+
+            foreach (Produto produto in produtos)
+            {
+                await _produtoRepository.Remove(produto);
+            }
+
+            await _estoqueRepository.Remove(estoque);
+
+            
+
+            return new();
+        }
     }
 
 }
