@@ -2,6 +2,7 @@
 using api_mobile.Model;
 using api_mobile.Repository;
 using api_mobile.ViewModel;
+using System.Net;
 
 namespace api_mobile.Services
 {
@@ -13,6 +14,8 @@ namespace api_mobile.Services
         public async Task<ResultModel<List<ValidadeDTO>>> GetAll(int produtoId)
         {
            List<Validade> validades  =  await _validadeRepository.GetAll(produtoId);
+            if (validades == null)
+                return new ResultModel<List<ValidadeDTO>>(HttpStatusCode.NotFound, "Nenhuma validade encontrada");
 
             List<ValidadeDTO> validadesDTO = new();
 

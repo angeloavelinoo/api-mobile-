@@ -251,7 +251,7 @@ namespace api_mobile.Services
                 Validade validade = await _validadeRepository.GetByValidadeAndId(item.ProdutoId, item.Validade);
 
                 validade.Quantidade -= item.Quantidade;
-                produto.Quantidade += item.Quantidade;
+                produto.Quantidade -= item.Quantidade;
 
                 await _produtoRepository.Update(produto);
                 await _validadeRepository.Update(validade);
