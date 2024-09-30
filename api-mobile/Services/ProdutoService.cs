@@ -68,11 +68,19 @@ namespace api_mobile.Services
 
                     validade.Quantidade -= produtoDTO.Quantidade;
 
+                    if(produto.Quantidade == 0)
+                    {
+                        produto.Ativo = false;
+                        produto.Excluido = true;
+                    }
+
                     await _validadeRepository.Update(validade);
                 }
                 else
                 {
                     produto.Quantidade += produtoDTO.Quantidade;
+                    produto.Ativo = true;
+                    produto.Excluido = false;
                     Validade validade = new(produtoId: produto.Id, dataValidade: produtoDTO.DataValidade, quantidade: produtoDTO.Quantidade);
                     await _validadeRepository.Create(validade);
                 }
