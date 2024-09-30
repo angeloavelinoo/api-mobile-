@@ -20,6 +20,7 @@
         public DateTime DataCadastro { get; set; }
         public decimal Valor { get; set; }
         public int EstoqueId { get; set; }
+        public bool Ativo { get; set; }
         public  Estoque Estoque { get; set; }
         public List<ProdutoCategoria>? ProdutosCategorias { get; set; }
         public List<Movimentacao>? Movimentacoes { get; set; }

@@ -10,7 +10,7 @@ namespace api_mobile.Repository
 
         public async Task<List<Produto>> GetByEstoque(int estoqueId)
         {
-            List<Produto> produtos = await _context.Set<Produto>().Where(x => x.EstoqueId == estoqueId).ToListAsync();
+            List<Produto> produtos = await _context.Set<Produto>().Where(x => x.EstoqueId == estoqueId && x.Ativo).ToListAsync();
 
             return produtos;
         }
