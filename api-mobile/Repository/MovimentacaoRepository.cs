@@ -29,4 +29,11 @@ public class MovimentacaoRepository(DataContext context)
         
         return movimentacoes;
     }
+
+    public async Task<List<Movimentacao>> GetByProdutoId(int produtoId)
+    {
+        List<Movimentacao> movimentacoes = await _context.Set<Movimentacao>().Where(x => x.ProdutoId == produtoId).ToListAsync();
+        
+        return movimentacoes;
+    }
 }

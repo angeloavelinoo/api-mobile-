@@ -40,6 +40,7 @@ builder.Services.AddScoped<CategoriaService>();
 builder.Services.AddScoped<ValidadeRepository>();
 builder.Services.AddScoped<ValidadeService>();
 builder.Services.AddScoped<MovimentacaoRepository>();
+builder.Services.AddScoped<MovimentacaoService>();
 
 #endregion
 builder.Services.AddServiceJwt();
