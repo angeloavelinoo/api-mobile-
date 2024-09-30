@@ -58,7 +58,7 @@ namespace api_mobile.Services
             {
                 if(produtoDTO.Quantidade < 0)
                 {
-                    produto.Quantidade -= produtoDTO.Quantidade;
+                    produto.Quantidade += produtoDTO.Quantidade;
 
                     Movimentacao movimentacao = new(tipo: "Saida", produtoId: produto.Id, quantidade: produtoDTO.Quantidade, valorTotal: produtoDTO.Valor * produtoDTO.Quantidade, dataMovimentacao: DateTime.UtcNow);
 
@@ -66,7 +66,7 @@ namespace api_mobile.Services
 
                     Validade validade = await _validadeRepository.GetByValidadeAndId(produto.Id, produtoDTO.DataValidade);
 
-                    validade.Quantidade -= produtoDTO.Quantidade;
+                    validade.Quantidade += produtoDTO.Quantidade;
 
                     if(produto.Quantidade == 0)
                     {
@@ -251,7 +251,7 @@ namespace api_mobile.Services
             return new();
         }
 
-        public async Task<ResultModel<dynamic>> Compra(List<CompraDTO> compraDTO)
+        public async Task<ResultModel<CompraDTO>> Compra(List<CompraDTO> compraDTO)
         {
             foreach(var item in compraDTO)
             {
