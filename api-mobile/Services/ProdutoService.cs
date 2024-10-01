@@ -68,7 +68,7 @@ namespace api_mobile.Services
 
                     validade.Quantidade += produtoDTO.Quantidade;
 
-                    if(produto.Quantidade == 0)
+                    if(produto.Quantidade <= 0)
                     {
                         produto.Ativo = false;
                         produto.Excluido = true;
