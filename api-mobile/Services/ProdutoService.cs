@@ -155,11 +155,12 @@ namespace api_mobile.Services
                 return new(HttpStatusCode.NotFound, "Nenhum produto deste estoque foi encontrado");
 
             List <ProdutoDTO> produtosDTO = new();
-            List<ValidadeDTO> validadesDTO = new();
+            
 
             foreach(Produto produto in produtos)
             {
                 ProdutoCategoria produtoCategoria = await _produtoCategoriaRepository.GetByProdutoId(produto.Id);
+                List<ValidadeDTO> validadesDTO = new();
                 List<Validade> validades =  await _validadeRepository.GetAll(produto.Id);
 
                 ProdutoDTO produtoDTO = new ProdutoDTO {
